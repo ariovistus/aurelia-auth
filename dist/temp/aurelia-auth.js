@@ -921,6 +921,30 @@ var OAuth2 = exports.OAuth2 = (_dec7 = (0, _aureliaDependencyInjection.inject)(S
     });
   };
 
+  OAuth2.prototype.makeRedirectUri = function makeRedirectUri(options, userData) {
+    var current = extend({}, this.defaults, options);
+
+    var stateName = current.name + '_state';
+
+    if (isFunction(current.state)) {
+      this.storage.set(stateName, current.state());
+    } else if (isString(current.state)) {
+      this.storage.set(stateName, current.state);
+    }
+
+    var nonceName = current.name + '_nonce';
+
+    if (isFunction(current.nonce)) {
+      this.storage.set(nonceName, current.nonce());
+    } else if (isString(current.nonce)) {
+      this.storage.set(nonceName, current.nonce);
+    }
+
+    var url = current.authorizationEndpoint + '?' + this.buildQueryString(current);
+
+    return url;
+  };
+
   OAuth2.prototype.verifyIdToken = function verifyIdToken(oauthData, providerName) {
     var idToken = oauthData && oauthData[this.config.responseIdTokenProp];
     if (!idToken) return true;
@@ -1105,6 +1129,19 @@ var AuthService = exports.AuthService = (_dec8 = (0, _aureliaDependencyInjection
       _this10.eventAggregator.publish('auth:authenticate', response);
       return response;
     });
+  };
+
+  AuthService.prototype.inlineRedirectAuthenticate = function inlineRedirectAuthenticate(name, redirect, userData) {
+    var provider = this.oAuth2;
+    var urlData = parseQueryString(window.location.hash.substr(1));
+    if (this.auth.tokenName in urlData) {
+      this.auth.setToken(urlData);
+      var token = this.auth.decomposeToken(this.auth.getToken());
+      return Promise.resolve(token);
+    } else {
+      window.location.href = provider.makeRedirectUri(this.config.providers[name], userData || {});
+      return new Promise(function () {});
+    }
   };
 
   AuthService.prototype.unlink = function unlink(provider) {

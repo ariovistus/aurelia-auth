@@ -3,7 +3,7 @@
 System.register(['aurelia-dependency-injection', 'aurelia-fetch-client', 'aurelia-event-aggregator', './authentication', './base-config', './oAuth1', './oAuth2', './auth-utilities'], function (_export, _context) {
   "use strict";
 
-  var inject, HttpClient, json, EventAggregator, Authentication, BaseConfig, OAuth1, OAuth2, status, joinUrl, _typeof, _dec, _class, AuthService;
+  var inject, HttpClient, json, EventAggregator, Authentication, BaseConfig, OAuth1, OAuth2, status, joinUrl, parseQueryString, _typeof, _dec, _class, AuthService;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -30,6 +30,7 @@ System.register(['aurelia-dependency-injection', 'aurelia-fetch-client', 'aureli
     }, function (_authUtilities) {
       status = _authUtilities.status;
       joinUrl = _authUtilities.joinUrl;
+      parseQueryString = _authUtilities.parseQueryString;
     }],
     execute: function () {
       _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -143,6 +144,19 @@ System.register(['aurelia-dependency-injection', 'aurelia-fetch-client', 'aureli
             _this4.eventAggregator.publish('auth:authenticate', response);
             return response;
           });
+        };
+
+        AuthService.prototype.inlineRedirectAuthenticate = function inlineRedirectAuthenticate(name, redirect, userData) {
+          var provider = this.oAuth2;
+          var urlData = parseQueryString(window.location.hash.substr(1));
+          if (this.auth.tokenName in urlData) {
+            this.auth.setToken(urlData);
+            var token = this.auth.decomposeToken(this.auth.getToken());
+            return Promise.resolve(token);
+          } else {
+            window.location.href = provider.makeRedirectUri(this.config.providers[name], userData || {});
+            return new Promise(function () {});
+          }
         };
 
         AuthService.prototype.unlink = function unlink(provider) {

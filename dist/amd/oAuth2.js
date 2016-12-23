@@ -87,6 +87,30 @@ define(['exports', 'aurelia-dependency-injection', './auth-utilities', './storag
       });
     };
 
+    OAuth2.prototype.makeRedirectUri = function makeRedirectUri(options, userData) {
+      var current = (0, _authUtilities.extend)({}, this.defaults, options);
+
+      var stateName = current.name + '_state';
+
+      if ((0, _authUtilities.isFunction)(current.state)) {
+        this.storage.set(stateName, current.state());
+      } else if ((0, _authUtilities.isString)(current.state)) {
+        this.storage.set(stateName, current.state);
+      }
+
+      var nonceName = current.name + '_nonce';
+
+      if ((0, _authUtilities.isFunction)(current.nonce)) {
+        this.storage.set(nonceName, current.nonce());
+      } else if ((0, _authUtilities.isString)(current.nonce)) {
+        this.storage.set(nonceName, current.nonce);
+      }
+
+      var url = current.authorizationEndpoint + '?' + this.buildQueryString(current);
+
+      return url;
+    };
+
     OAuth2.prototype.verifyIdToken = function verifyIdToken(oauthData, providerName) {
       var idToken = oauthData && oauthData[this.config.responseIdTokenProp];
       if (!idToken) return true;

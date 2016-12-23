@@ -108,6 +108,30 @@ System.register(['aurelia-dependency-injection', './auth-utilities', './storage'
           });
         };
 
+        OAuth2.prototype.makeRedirectUri = function makeRedirectUri(options, userData) {
+          var current = extend({}, this.defaults, options);
+
+          var stateName = current.name + '_state';
+
+          if (isFunction(current.state)) {
+            this.storage.set(stateName, current.state());
+          } else if (isString(current.state)) {
+            this.storage.set(stateName, current.state);
+          }
+
+          var nonceName = current.name + '_nonce';
+
+          if (isFunction(current.nonce)) {
+            this.storage.set(nonceName, current.nonce());
+          } else if (isString(current.nonce)) {
+            this.storage.set(nonceName, current.nonce);
+          }
+
+          var url = current.authorizationEndpoint + '?' + this.buildQueryString(current);
+
+          return url;
+        };
+
         OAuth2.prototype.verifyIdToken = function verifyIdToken(oauthData, providerName) {
           var idToken = oauthData && oauthData[this.config.responseIdTokenProp];
           if (!idToken) return true;

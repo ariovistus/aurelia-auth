@@ -7,7 +7,7 @@ import { Authentication } from './authentication';
 import { BaseConfig } from './base-config';
 import { OAuth1 } from './oAuth1';
 import { OAuth2 } from './oAuth2';
-import { status, joinUrl } from './auth-utilities';
+import { status, joinUrl, parseQueryString } from './auth-utilities';
 
 export let AuthService = (_dec = inject(HttpClient, Authentication, OAuth1, OAuth2, BaseConfig, EventAggregator), _dec(_class = class AuthService {
   constructor(http, auth, oAuth1, oAuth2, config, eventAggregator) {
@@ -104,6 +104,19 @@ export let AuthService = (_dec = inject(HttpClient, Authentication, OAuth1, OAut
       this.eventAggregator.publish('auth:authenticate', response);
       return response;
     });
+  }
+
+  inlineRedirectAuthenticate(name, redirect, userData) {
+    let provider = this.oAuth2;
+    var urlData = parseQueryString(window.location.hash.substr(1));
+    if (this.auth.tokenName in urlData) {
+      this.auth.setToken(urlData);
+      var token = this.auth.decomposeToken(this.auth.getToken());
+      return Promise.resolve(token);
+    } else {
+      window.location.href = provider.makeRedirectUri(this.config.providers[name], userData || {});
+      return new Promise(function () {});
+    }
   }
 
   unlink(provider) {

@@ -82,6 +82,7 @@ declare module 'aurelia-auth' {
   export class OAuth2 {
     constructor(storage: any, popup: any, http: any, config: any, auth: any);
     open(options: any, userData: any): any;
+    makeRedirectUri(options: any, userData: any): any;
     verifyIdToken(oauthData: any, providerName: any): any;
     exchangeForToken(oauthData: any, userData: any, current: any): any;
     buildQueryString(current: any): any;
@@ -96,6 +97,7 @@ declare module 'aurelia-auth' {
     login(email: any, password: any): any;
     logout(redirectUri: any): any;
     authenticate(name: any, redirect: any, userData: any): any;
+    inlineRedirectAuthenticate(name: any, redirect: any, userData: any): any;
     unlink(provider: any): any;
   }
 }

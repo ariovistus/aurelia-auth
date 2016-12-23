@@ -127,6 +127,19 @@ define(['exports', 'aurelia-dependency-injection', 'aurelia-fetch-client', 'aure
       });
     };
 
+    AuthService.prototype.inlineRedirectAuthenticate = function inlineRedirectAuthenticate(name, redirect, userData) {
+      var provider = this.oAuth2;
+      var urlData = (0, _authUtilities.parseQueryString)(window.location.hash.substr(1));
+      if (this.auth.tokenName in urlData) {
+        this.auth.setToken(urlData);
+        var token = this.auth.decomposeToken(this.auth.getToken());
+        return Promise.resolve(token);
+      } else {
+        window.location.href = provider.makeRedirectUri(this.config.providers[name], userData || {});
+        return new Promise(function () {});
+      }
+    };
+
     AuthService.prototype.unlink = function unlink(provider) {
       var _this5 = this;
 
