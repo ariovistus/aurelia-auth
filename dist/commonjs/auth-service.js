@@ -139,8 +139,7 @@ var AuthService = exports.AuthService = (_dec = (0, _aureliaDependencyInjection.
     var urlData = (0, _authUtilities.parseQueryString)(window.location.hash.substr(1));
     if (this.config.responseIdTokenProp in urlData) {
       this.auth.setToken(urlData);
-      var token = this.auth.decomposeToken(this.auth.getToken());
-      return Promise.resolve(token);
+      return Promise.resolve(urlData);
     } else {
       window.location.href = provider.makeRedirectUri(this.config.providers[name], userData || {});
       return new Promise(function () {});
