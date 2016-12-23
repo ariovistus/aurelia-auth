@@ -109,7 +109,7 @@ export let AuthService = (_dec = inject(HttpClient, Authentication, OAuth1, OAut
   inlineRedirectAuthenticate(name, redirect, userData) {
     let provider = this.oAuth2;
     var urlData = parseQueryString(window.location.hash.substr(1));
-    if (this.auth.tokenName in urlData) {
+    if (this.config.responseIdTokenProp in urlData) {
       this.auth.setToken(urlData);
       var token = this.auth.decomposeToken(this.auth.getToken());
       return Promise.resolve(token);

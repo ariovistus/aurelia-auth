@@ -1134,7 +1134,7 @@ var AuthService = exports.AuthService = (_dec8 = (0, _aureliaDependencyInjection
   AuthService.prototype.inlineRedirectAuthenticate = function inlineRedirectAuthenticate(name, redirect, userData) {
     var provider = this.oAuth2;
     var urlData = parseQueryString(window.location.hash.substr(1));
-    if (this.auth.tokenName in urlData) {
+    if (this.config.responseIdTokenProp in urlData) {
       this.auth.setToken(urlData);
       var token = this.auth.decomposeToken(this.auth.getToken());
       return Promise.resolve(token);

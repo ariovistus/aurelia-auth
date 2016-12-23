@@ -113,9 +113,11 @@ export class AuthService {
   }
 
   inlineRedirectAuthenticate(name, redirect, userData) {
+    // this is a hacky thing that probably doesn't work for a vast majority of configurations
+    // all I know is responseType="id_token token", which seems to correspond to responseIdTokenProp="id_token"
     let provider = this.oAuth2;
     var urlData = parseQueryString(window.location.hash.substr(1));
-    if(this.auth.tokenName in urlData) {
+    if(this.config.responseIdTokenProp in urlData) {
         this.auth.setToken(urlData);
         var token = this.auth.decomposeToken(this.auth.getToken());
         return Promise.resolve(token);
